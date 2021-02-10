@@ -130,7 +130,7 @@ class Twitter {
     }
   }
 
-  async getBearerToken() {
+  async getBearerToken(fetchOptions = {}) {
     const headers = {
       Authorization:
         'Basic ' +
@@ -144,12 +144,13 @@ class Twitter {
       method: 'POST',
       body: 'grant_type=client_credentials',
       headers,
+      ...fetchOptions,
     }).then(Twitter._handleResponse);
 
     return results;
   }
 
-  async getRequestToken(twitterCallbackUrl) {
+  async getRequestToken(twitterCallbackUrl, fetchOptions = {}) {
     const requestData = {
       url: `${this.oauth}/request_token`,
       method: 'POST',
@@ -166,13 +167,14 @@ class Twitter {
     const results = await Fetch(requestData.url, {
       method: 'POST',
       headers: Object.assign({}, baseHeaders, headers),
+      ...fetchOptions,
     })
       .then(Twitter._handleResponseTextOrJson);
 
     return results;
   }
 
-  async getAccessToken(options) {
+  async getAccessToken(options, fetchOptions = {}) {
     const requestData = {
       url: `${this.oauth}/access_token`,
       method: 'POST',
@@ -186,6 +188,7 @@ class Twitter {
     const results = await Fetch(requestData.url, {
       method: 'POST',
       headers: Object.assign({}, baseHeaders, headers),
+      ...fetchOptions,
     })
       .then(Twitter._handleResponseTextOrJson);
 
@@ -229,17 +232,18 @@ class Twitter {
    * Send a GET request
    * @param {string} resource - endpoint, e.g. `followers/ids`
    * @param {object} [parameters] - optional parameters
+   * @param {object=} fetchOptions - options forwarded to `Fetch`
    * @returns {Promise<object>} Promise resolving to the response from the Twitter API.
    *   The `_header` property will be set to the Response headers (useful for checking rate limits)
    */
-  get(resource, parameters) {
+  get(resource, parameters, fetchOptions = {}) {
     const { requestData, headers } = this._makeRequest(
       'GET',
       resource,
       parameters,
     );
 
-    return Fetch(requestData.url, { headers })
+    return Fetch(requestData.url, { headers, ...fetchOptions })
       .then(Twitter._handleResponse);
   }
 
@@ -248,10 +252,11 @@ class Twitter {
    * @param {string} resource - endpoint, e.g. `users/lookup`
    * @param {object} body - POST parameters object.
    *   Will be encoded appropriately (JSON or urlencoded) based on the resource
+   * @param {object=} fetchOptions - options forwarded to `Fetch`
    * @returns {Promise<object>} Promise resolving to the response from the Twitter API.
    *   The `_header` property will be set to the Response headers (useful for checking rate limits)
    */
-  post(resource, body) {
+  post(resource, body, fetchOptions = {}) {
     const { requestData, headers } = this._makeRequest(
       'POST',
       resource,
@@ -270,6 +275,7 @@ class Twitter {
       method: 'POST',
       headers: postHeaders,
       body,
+      ...fetchOptions,
     })
       .then(Twitter._handleResponse);
   }
@@ -279,9 +285,10 @@ class Twitter {
    * @param {string} resource - endpoint e.g. `direct_messages/welcome_messages/update`
    * @param {object} parameters - required or optional query parameters
    * @param {object} body - PUT request body 
+   * @param {object=} fetchOptions - options forwarded to `Fetch`
    * @returns {Promise<object>} Promise resolving to the response from the Twitter API.
    */
-  put(resource, parameters, body) {
+  put(resource, parameters, body, fetchOptions = {}) {
     const { requestData, headers } = this._makeRequest(
       'PUT',
       resource,
@@ -295,6 +302,7 @@ class Twitter {
       method: 'PUT',
       headers: putHeaders,
       body,
+      ...fetchOptions,
     })
       .then(Twitter._handleResponse);
   }
@@ -303,9 +311,10 @@ class Twitter {
    *
    * @param {string} resource - endpoint, e.g. `statuses/filter`
    * @param {object} parameters
+   * @param {object=} fetchOptions - options forwarded to `Fetch`
    * @returns {Stream}
    */
-  stream(resource, parameters) {
+  stream(resource, parameters, fetchOptions = {}) {
     if (this.authType !== 'User')
       throw new Error('Streams require user context authentication');
 
@@ -330,6 +339,7 @@ class Twitter {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: percentEncode(querystring.stringify(parameters)),
+      ...fetchOptions,
     });
 
     request
