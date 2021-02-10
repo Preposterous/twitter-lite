@@ -5,10 +5,10 @@
   "source": "twitter.js",
   "main": "dist/twitter.js",
   "module": "dist/twitter.m.js",
-  "types": "index.d.ts",
+  "types": "types/index.d.ts",
   "files": [
     "dist",
-    "index.d.ts"
+    "types/index.d.ts"
   ],
   "repository": "draftbit/twitter-lite",
   "homepage": "https://github.com/draftbit/twitter-lite",
@@ -36,6 +36,7 @@
     "@types/node": "^13.13.4",
     "bundlesize": "^0.18.0",
     "dotenv": "^8.2.0",
+    "dtslint": "^4.0.6",
     "eslint": "^6.8.0",
     "eslint-plugin-jest": "^23.8.2",
     "flow-bin": "^0.123.0",
@@ -46,6 +47,7 @@
   },
   "scripts": {
     "lint": "eslint --fix ./",
+    "dtslint": "dtslint types",
     "prepare": "microbundle {stream,twitter}.js && bundlesize",
     "test": "eslint --fix . && jest --detectOpenHandles",
     "release": "npm run -s prepare && npm test && git tag $npm_package_version && git push && git push --tags && npm publish"
@@ -56,7 +58,8 @@
     }
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "testRegex": "/test/.*\\.test\\.js"
   },
   "bundlesize": [
     {
@@ -64,7 +67,7 @@
       "maxSize": "3 kB"
     },
     {
-      "path": "index.d.ts",
+      "path": "types/index.d.ts",
       "maxSize": "3 kB"
     }
   ]

@@ -1,0 +1,52 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:    
+      - master
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: yarn install
+      - name: Run tests
+        run: yarn run test
+        env:
+          CI: true
+  lint:
+    name: Lint
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: yarn install
+      - name: Run lint
+        run: yarn run lint
+  dtslint:
+    name: Lint Typings
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: yarn install
+      - name: Run dtslint
+        run: yarn run dtslint
